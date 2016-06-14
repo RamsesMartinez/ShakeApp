@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:gravity="center_horizontal"
     tools:context="mx.ramsesmartinez.shakeapp.MainActivity">
     <include
         layout="@layout/toolbar"
@@ -11,24 +12,73 @@
         android:layout_width="match_parent"/>
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="@dimen/width_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+
         android:paddingLeft="@dimen/activity_vertical_margin"
         android:paddingRight="@dimen/activity_vertical_margin"
         android:gravity="center_horizontal">
+        <!--android:paddingTop="@dimen/activity_horizontal_margin"-->
 
         <ImageView
-            android:layout_width="wrap_content"
+            android:id="@+id/imageView"
+            android:layout_width="@dimen/height_image_profile"
+            android:layout_height="@dimen/width_image_profile"
+            android:layout_marginTop="@dimen/margin_image"
+            android:layout_marginBottom="@dimen/margin_image"
+            android:src="@drawable/img_boy" />
+
+        <TextView
+            android:id="@+id/text_view_email"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            
-            android:id="@+id/imageView"/>
+            android:text="@string/email"
+            android:visibility="gone"/>
+        <!--android:layout_marginTop="@dimen/activity_horizontal_margin"-->
+
+        <EditText
+            android:id="@+id/edit_text_email"
+            android:hint="@string/email"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:singleLine="true"/>
+
+        <TextView
+            android:id="@+id/text_view_password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_text"
+            android:text="@string/password"
+            android:visibility="gone"/>
+        <!--android:layout_marginTop="@dimen/activity_horizontal_margin"-->
+
+        <EditText
+            android:id="@+id/edit_text_password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/margin_text"
+            android:hint="@string/password"
+            android:singleLine="true"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_text"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:text="O mejor"/>
+        <!--android:layout_marginTop="@dimen/activity_horizontal_margin"-->
 
         <Button
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:layout_marginTop="@dimen/activity_horizontal_margin"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/loggin_facebook"
-            android:drawableLeft="@drawable/ic_facebook"
-            style="@style/Widget.AppCompat.Button.Colored" />
+            android:drawableLeft="@drawable/ic_facebook"/>
+
+
     </LinearLayout>
 
 </LinearLayout>

@@ -4,5 +4,12 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="elevation_floating_button">16dp</dimen>
     <dimen name="elevation_toolbar">4dp</dimen>
+
     <dimen name="margin_floating_button">16dp</dimen>
+    <dimen name="margin_text">8dp</dimen>
+    <dimen name="margin_image">12dp</dimen>
+
+    <dimen name="height_image_profile">128dp</dimen>
+    <dimen name="width_image_profile">128dp</dimen>
+    <dimen name="width_content">320dp</dimen>
 </resources>
