@@ -10,8 +10,25 @@
         android:layout_height="wrap_content"
         android:layout_width="match_parent"/>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingLeft="@dimen/activity_vertical_margin"
+        android:paddingRight="@dimen/activity_vertical_margin"
+        android:gravity="center_horizontal">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            
+            android:id="@+id/imageView"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/loggin_facebook"
+            android:drawableLeft="@drawable/ic_facebook"
+            style="@style/Widget.AppCompat.Button.Colored" />
+    </LinearLayout>
+
 </LinearLayout>

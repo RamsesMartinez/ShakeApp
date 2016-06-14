@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">ShakeApp</string>
+    <string name="loggin_facebook">Iniciar Sesión</string>
+    <string name="facebook_app_id">522519321283512</string>
 </resources>
