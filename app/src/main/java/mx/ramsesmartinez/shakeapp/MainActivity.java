@@ -1,5 +1,10 @@
 package mx.ramsesmartinez.shakeapp;
 
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -10,16 +15,24 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity implements OnClickListener, OnFocusChangeListener {
 
+    Bitmap originalBitmap;
+    Drawable originalDrawable;
+    RoundedBitmapDrawable roundedDrawable;
+
     EditText editTextEmail;
     EditText editTextPassword;
+    ImageView imageViewProfileLogin;
     TextView textViewEmail;
     TextView textViewPassword;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,13 +40,24 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
         setContentView(R.layout.activity_main);
         setToolbar();
 
+        //Extracts the drawable in a bitmap
+        originalDrawable = getResources().getDrawable(R.drawable.img_boy);
+        originalBitmap = ((BitmapDrawable) originalDrawable).getBitmap();
+
+        //Creates the rounded drawable
+        roundedDrawable = RoundedBitmapDrawableFactory.create(getResources(), originalBitmap);
+        roundedDrawable.setCornerRadius(originalBitmap.getHeight());
+
         editTextEmail= (EditText) findViewById(R.id.edit_text_email);
         editTextPassword = (EditText) findViewById(R.id.edit_text_password);
+        imageViewProfileLogin = (ImageView) findViewById(R.id.image_view_login_profile);
         textViewEmail  = (TextView) findViewById(R.id.text_view_email);
         textViewPassword = (TextView) findViewById(R.id.text_view_password);
 
         editTextEmail.setOnFocusChangeListener(this);
         editTextPassword.setOnFocusChangeListener(this);
+        imageViewProfileLogin.setImageDrawable(roundedDrawable);
+
     }
 
     public void setToolbar(){
