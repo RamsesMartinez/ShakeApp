@@ -11,13 +11,17 @@
     <dimen name="margin_floating_button">16dp</dimen>
     <dimen name="margin_text">8dp</dimen>
     <dimen name="margin_image">12dp</dimen>
+    <dimen name="margin_top_chronometer">32dp</dimen>
 
+    <dimen name="height_card_view">230dp</dimen>
     <dimen name="height_image_profile">128dp</dimen>
     <dimen name="height_button">36dp</dimen>
     <dimen name="height_content_score">226dp</dimen>
+    <dimen name="floatin_action_button">56dp</dimen>
     <dimen name="width_content_score">226dp</dimen>
     <dimen name="width_image_profile">128dp</dimen>
     <dimen name="width_content">320dp</dimen>
 
-    <dimen name="font_size_score">48sp</dimen>
+    <dimen name="font_size_score">96sp</dimen>
+    <dimen name="font_size_chronometer">48sp</dimen>
 </resources>

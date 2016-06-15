@@ -6,23 +6,20 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
+import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
 
 import com.facebook.AccessToken;
@@ -44,6 +41,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
     DownloadImages downloadImages;
     Profile facebookProfile;
     RoundedBitmapDrawable roundedDrawable;
+    Toolbar toolbar;
     LoginButton loginButton;
     Uri uriPhoto;
 
@@ -63,55 +61,10 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
         FacebookSdk.sdkInitialize(getApplicationContext());
         AppEventsLogger.activateApp(this);
         setContentView(R.layout.activity_main);
-        setToolbar();
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         callbackManager = CallbackManager.Factory.create();
-
-        if (AccessToken.getCurrentAccessToken() != null && com.facebook.Profile.getCurrentProfile() != null) {
-
-            facebookProfile = com.facebook.Profile.getCurrentProfile();
-            strName = facebookProfile.getName();
-            uriPhoto = facebookProfile.getProfilePictureUri(200, 200);
-            strUrlPhoto = uriPhoto.toString();
-            // App code
-            Intent intentShakeActivity = new Intent(MainActivity.this, ShakeActivity.class);
-            intentShakeActivity.putExtra("NAME", strName);
-            intentShakeActivity.putExtra("PHOTO", strUrlPhoto);
-            startActivity(intentShakeActivity);
-            finish();
-        }
-
-        loginButton = (LoginButton) findViewById(R.id.button_login_facebook);
-        loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
-            @Override
-            public void onSuccess(LoginResult loginResult) {
-
-                facebookProfile = com.facebook.Profile.getCurrentProfile();
-                strName = facebookProfile.getName();
-                uriPhoto = facebookProfile.getProfilePictureUri(200,200);
-                strUrlPhoto = uriPhoto.toString();
-                downloadImages = new DownloadImages();
-                downloadImages.execute();
-
-                Intent intentShakeActivity = new Intent(MainActivity.this,ShakeActivity.class);
-                intentShakeActivity.putExtra("NAME",strName);
-                intentShakeActivity.putExtra("PHOTO",strUrlPhoto);
-                startActivity(intentShakeActivity);
-                finish();
-
-            }
-
-            @Override
-            public void onCancel() {
-
-            }
-
-            @Override
-            public void onError(FacebookException error) {
-
-            }
-        });
-
         drawableImageProfile= getResources().getDrawable(R.drawable.img_boy);
         bitmapImageProfile = ((BitmapDrawable) drawableImageProfile).getBitmap();
 
@@ -129,6 +82,8 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
         editTextPassword.setOnFocusChangeListener(this);
         imageViewProfileLogin.setImageDrawable(roundedDrawable);
 
+        // Validate if there is already someone logged
+        validateLogged();
 
     }
 
@@ -145,6 +100,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
 
     @Override
     public void onFocusChange(View v, boolean hasFocus) {
+        // handling text views
         switch(v.getId()){
             case R.id.edit_text_email:
                 if(hasFocus) {
@@ -185,10 +141,51 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
         }
     }
 
-    public void setToolbar(){
-        Toolbar toolbar =(Toolbar) findViewById(R.id.activity_my_toolbar);
-        toolbar.setTitle(R.string.login);
-        setSupportActionBar(toolbar);
+    private void validateLogged(){
+        if (AccessToken.getCurrentAccessToken() != null && com.facebook.Profile.getCurrentProfile() != null) {
+
+            facebookProfile = com.facebook.Profile.getCurrentProfile();
+            strName = facebookProfile.getName();
+            uriPhoto = facebookProfile.getProfilePictureUri(200, 200);
+            strUrlPhoto = uriPhoto.toString();
+            // App code
+            Intent intentShakeActivity = new Intent(MainActivity.this, ShakeActivity.class);
+            intentShakeActivity.putExtra("NAME", strName);
+            intentShakeActivity.putExtra("PHOTO", strUrlPhoto);
+            startActivity(intentShakeActivity);
+//            finish();
+        }
+
+        loginButton = (LoginButton) findViewById(R.id.button_login_facebook);
+        loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+
+                facebookProfile = com.facebook.Profile.getCurrentProfile();
+                strName = facebookProfile.getName();
+                uriPhoto = facebookProfile.getProfilePictureUri(200,200);
+                strUrlPhoto = uriPhoto.toString();
+                downloadImages = new DownloadImages();
+                downloadImages.execute();
+
+                Intent intentShakeActivity = new Intent(MainActivity.this,ShakeActivity.class);
+                intentShakeActivity.putExtra("NAME",strName);
+                intentShakeActivity.putExtra("PHOTO",strUrlPhoto);
+                startActivity(intentShakeActivity);
+                finish();
+
+            }
+
+            @Override
+            public void onCancel() {
+
+            }
+
+            @Override
+            public void onError(FacebookException error) {
+
+            }
+        });
     }
 
     class DownloadImages extends AsyncTask<Void,Void,Void>{
