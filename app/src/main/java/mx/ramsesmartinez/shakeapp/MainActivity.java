@@ -1,6 +1,5 @@
 package mx.ramsesmartinez.shakeapp;
 
-import android.annotation.TargetApi;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -58,21 +57,30 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
     String strName;
 
 
-    public void setToolbar(){
-        Toolbar toolbar =(Toolbar) findViewById(R.id.activity_my_toolbar);
-        toolbar.setTitle("Login");
-        setSupportActionBar(toolbar);
-    }
-
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         FacebookSdk.sdkInitialize(getApplicationContext());
+        AppEventsLogger.activateApp(this);
         setContentView(R.layout.activity_main);
         setToolbar();
 
         callbackManager = CallbackManager.Factory.create();
+
+        if (AccessToken.getCurrentAccessToken() != null && com.facebook.Profile.getCurrentProfile() != null) {
+
+            facebookProfile = com.facebook.Profile.getCurrentProfile();
+            strName = facebookProfile.getName();
+            uriPhoto = facebookProfile.getProfilePictureUri(200, 200);
+            strUrlPhoto = uriPhoto.toString();
+            // App code
+            Intent intentShakeActivity = new Intent(MainActivity.this, ShakeActivity.class);
+            intentShakeActivity.putExtra("NAME", strName);
+            intentShakeActivity.putExtra("PHOTO", strUrlPhoto);
+            startActivity(intentShakeActivity);
+            finish();
+        }
+
         loginButton = (LoginButton) findViewById(R.id.button_login_facebook);
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
@@ -175,6 +183,12 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
                 }
                 break;
         }
+    }
+
+    public void setToolbar(){
+        Toolbar toolbar =(Toolbar) findViewById(R.id.activity_my_toolbar);
+        toolbar.setTitle(R.string.login);
+        setSupportActionBar(toolbar);
     }
 
     class DownloadImages extends AsyncTask<Void,Void,Void>{

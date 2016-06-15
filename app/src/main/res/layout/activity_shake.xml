@@ -23,6 +23,7 @@
             android:layout_gravity="center">
 
             <TextView
+                android:id="@+id/text_view_score"
                 android:background="@drawable/text_view_circle"
                 android:gravity="center_vertical|center_horizontal"
                 android:layout_height="@dimen/width_content_score"
@@ -42,7 +43,6 @@
             android:src="@drawable/ic_play"
             app:elevation="@dimen/elevation_floating_button"
             app:fabSize="normal"
-            app:borderWidth="0dp"
-            android:foregroundGravity="center_vertical|center_horizontal" />
+            app:borderWidth="0dp" />
     </FrameLayout>
 </LinearLayout>

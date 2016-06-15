@@ -87,7 +87,7 @@
             android:elevation="@dimen/elevation_raised_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/loggin"
+            android:text="@string/login"
             style="@style/Base.Widget.AppCompat.Button.Colored" />
 
         <!--android:layout_marginTop="@dimen/activity_horizontal_margin"-->

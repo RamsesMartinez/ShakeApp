@@ -5,7 +5,8 @@
     <string name="facebook_logout">Iniciar sesión con Facebook</string>
     <string name="facebook_app_id">522519321283512</string>
     <string name="password">Contraseña</string>
-    <string name="loggin">Iniciar sesión</string>
+    <string name="login">Iniciar sesión</string>
     <string name="or">OR</string>
     <string name="score">0</string>
+    <string name="act_main_no_acuracy">Sin Suficiente presición</string>
 </resources>
