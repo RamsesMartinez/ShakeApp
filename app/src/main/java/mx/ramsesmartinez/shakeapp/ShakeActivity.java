@@ -174,6 +174,7 @@ public class ShakeActivity extends AppCompatActivity implements SensorEventListe
         counter = 0;
         statusFloatingActionButton = "play";
 
+        floatingActionButton.setImageResource(R.drawable.ic_stop);
         chronometer.setBase(SystemClock.elapsedRealtime());
         chronometer.start();
         mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
@@ -184,7 +185,7 @@ public class ShakeActivity extends AppCompatActivity implements SensorEventListe
     }
     public void onStopChronometer(){
         statusFloatingActionButton = "stop";
-
+        floatingActionButton.setImageResource(R.drawable.ic_play);
         chronometer.stop();
         mSensorManager.unregisterListener(this);
         textViewShake.setVisibility(View.GONE);
