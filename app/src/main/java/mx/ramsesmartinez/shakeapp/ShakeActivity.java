@@ -25,11 +25,14 @@ import android.widget.Toast;
 
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.HttpMethod;
 import com.facebook.login.LoginManager;
+import com.facebook.share.Sharer;
 import com.facebook.share.model.ShareLinkContent;
 import com.facebook.share.widget.ShareButton;
 import com.facebook.share.widget.ShareDialog;
@@ -78,7 +81,7 @@ public class ShakeActivity extends AppCompatActivity implements SensorEventListe
         buttonShareFacebook = (Button) findViewById(R.id.button_facebook_share);
         chronometer = (Chronometer) findViewById(R.id.chronometer);
         floatingActionButton = (FloatingActionButton) findViewById(R.id.floating_action_button);
-        textViewScore = (TextView) findViewById(R.id.text_view_score);
+        textViewScore = (TextView) findViewById(R.id.text_view_number_score);
         textViewShake = (TextView) findViewById(R.id.text_view_shake);
 
 
@@ -257,17 +260,36 @@ public class ShakeActivity extends AppCompatActivity implements SensorEventListe
 
     }
 
-    public void onClickShareScore(View view){
+    public void onClickShareScore(final View view){
         if (ShareDialog.canShow(ShareLinkContent.class)) {
             ShareLinkContent linkContent = new ShareLinkContent.Builder()
                     .setContentTitle("Mi Score: " + String.valueOf(counter))
                     .setContentDescription(
                             "¿Podrás superar mi puntaje?")
-                    .setContentUrl(Uri.parse("https://s-media-cache-ak0.pinimg.com/236x/ba/79/76/ba7976fe2a863ce6c1cd96e4b033f290.jpg"))
+                    .setContentUrl(Uri.parse("Facebook.com"))
                     .build();
 
             shareDialog.show(linkContent);
         }
+        shareDialog.registerCallback(callbackManager, new FacebookCallback<Sharer.Result>() {
+            @Override
+            public void onSuccess(Sharer.Result result) {
+                counter = 0;
+                chronometer.setBase(SystemClock.elapsedRealtime());
+                onStopChronometer(false);
+                textViewScore.setText(String.valueOf(counter));
+            }
+
+            @Override
+            public void onCancel() {
+
+            }
+
+            @Override
+            public void onError(FacebookException error) {
+
+            }
+        });
     }
 
 
