@@ -17,6 +17,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.Chronometer;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -44,7 +45,8 @@ public class ShakeActivity extends AppCompatActivity implements SensorEventListe
     String urlImageProfile;
     String statusFloatingActionButton;
     int counter;
-
+    final String time = "00:15";
+    Button buttonShareFacebook;
     Chronometer chronometer;
     FloatingActionButton floatingActionButton;
     MediaPlayer soundHS;
@@ -64,6 +66,7 @@ public class ShakeActivity extends AppCompatActivity implements SensorEventListe
         counter = 0;
         statusFloatingActionButton = "stop";
 
+        buttonShareFacebook = (Button) findViewById(R.id.button_facebook_share);
         chronometer = (Chronometer) findViewById(R.id.chronometer);
         floatingActionButton = (FloatingActionButton) findViewById(R.id.floating_action_button);
         textViewScore = (TextView) findViewById(R.id.text_view_score);
@@ -150,7 +153,7 @@ public class ShakeActivity extends AppCompatActivity implements SensorEventListe
         switch (v.getId()){
             case R.id.floating_action_button:
                 if(statusFloatingActionButton.equals("stop"))  onStartChronometer();
-                else onStopChronometer();
+                else onStopChronometer(false);
                 break;
         }
     }
@@ -164,7 +167,7 @@ public class ShakeActivity extends AppCompatActivity implements SensorEventListe
         long elapsedTime = SystemClock.elapsedRealtime() - c.getBase();
         String strElapsedTime = String.valueOf(DateFormat.format("mm:ss", elapsedTime));
 
-        if(strElapsedTime.equals("01:00")) onStopChronometer();
+        if(strElapsedTime.equals(time)) onStopChronometer(true);
     }
 
     /**
@@ -182,14 +185,17 @@ public class ShakeActivity extends AppCompatActivity implements SensorEventListe
         soundHS.start();
         textViewShake.setVisibility(View.VISIBLE);
         textViewScore.setText(String.valueOf(counter));
+        buttonShareFacebook.setVisibility(View.GONE);
     }
-    public void onStopChronometer(){
+    public void onStopChronometer(boolean readyShare){
         statusFloatingActionButton = "stop";
         floatingActionButton.setImageResource(R.drawable.ic_play);
         chronometer.stop();
         mSensorManager.unregisterListener(this);
         textViewShake.setVisibility(View.GONE);
         soundHS.stop();
+        if(readyShare) buttonShareFacebook.setVisibility(View.VISIBLE);
+        else buttonShareFacebook.setVisibility(View.GONE);
     }
 
     /**

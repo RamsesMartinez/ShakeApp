@@ -36,11 +36,12 @@
             android:src="@drawable/img_boy" />
 
         <com.facebook.login.widget.LoginButton
-            android:id="@+id/button_login_facebook"
+            android:id="@+id/button_facebook_login"
             android:elevation="@dimen/elevation_raised_button"
             android:layout_width="match_parent"
             android:layout_gravity="center_horizontal"
             android:layout_height="wrap_content"
+            style="@style/com_facebook_button_share"
             android:layout_marginBottom="@dimen/activity_horizontal_margin"/>
 
         <TextView

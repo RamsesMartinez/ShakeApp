@@ -83,5 +83,17 @@
             app:elevation="@dimen/elevation_floating_button"
             app:fabSize="normal"
             app:borderWidth="0dp" />
+
+        <Button
+            android:id="@+id/button_facebook_share"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/facebook_share"
+            android:visibility="gone"
+            android:drawableLeft="@drawable/com_facebook_button_icon_white"
+            style="@style/com_facebook_button"
+            android:layout_gravity="bottom" />
+
+
     </FrameLayout>
 </LinearLayout>

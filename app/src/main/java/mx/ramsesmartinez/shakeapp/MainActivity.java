@@ -72,6 +72,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
         roundedDrawable = RoundedBitmapDrawableFactory.create(getResources(), bitmapImageProfile);
         roundedDrawable.setCornerRadius(bitmapImageProfile.getHeight());
 
+
         editTextEmail= (EditText) findViewById(R.id.edit_text_email);
         editTextPassword = (EditText) findViewById(R.id.edit_text_password);
         imageViewProfileLogin = (ImageView) findViewById(R.id.image_view_login_profile);
@@ -172,7 +173,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
             finish();
         }
 
-        loginButton = (LoginButton) findViewById(R.id.button_login_facebook);
+        loginButton = (LoginButton) findViewById(R.id.button_facebook_login);
         loginButton.setReadPermissions("user_friends");
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
