@@ -49,7 +49,7 @@ public class ShakeActivity extends AppCompatActivity implements SensorEventListe
     Button buttonShareFacebook;
     Chronometer chronometer;
     FloatingActionButton floatingActionButton;
-    MediaPlayer soundHS;
+    MediaPlayer soundWhip;
     TextView textViewScore;
     TextView textViewShake;
 
@@ -181,8 +181,7 @@ public class ShakeActivity extends AppCompatActivity implements SensorEventListe
         chronometer.setBase(SystemClock.elapsedRealtime());
         chronometer.start();
         mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
-        soundHS = MediaPlayer.create(this, R.raw.sound_harlem_shake);
-        soundHS.start();
+
         textViewShake.setVisibility(View.VISIBLE);
         textViewScore.setText(String.valueOf(counter));
         buttonShareFacebook.setVisibility(View.GONE);
@@ -193,7 +192,6 @@ public class ShakeActivity extends AppCompatActivity implements SensorEventListe
         chronometer.stop();
         mSensorManager.unregisterListener(this);
         textViewShake.setVisibility(View.GONE);
-        soundHS.stop();
         if(readyShare) buttonShareFacebook.setVisibility(View.VISIBLE);
         else buttonShareFacebook.setVisibility(View.GONE);
     }
@@ -254,6 +252,8 @@ public class ShakeActivity extends AppCompatActivity implements SensorEventListe
             // otherwise, reset the color
             if (gForce > SHAKE_THRESHOLD) {
                 textViewScore.setText(String.valueOf(++counter));
+                soundWhip = MediaPlayer.create(this, R.raw.sound_shot);
+                soundWhip.start();
             }
         }
     }
