@@ -14,6 +14,10 @@
 
     <dimen name="height_image_profile">128dp</dimen>
     <dimen name="height_button">36dp</dimen>
+    <dimen name="height_content_score">226dp</dimen>
+    <dimen name="width_content_score">226dp</dimen>
     <dimen name="width_image_profile">128dp</dimen>
     <dimen name="width_content">320dp</dimen>
+
+    <dimen name="font_size_score">48sp</dimen>
 </resources>
