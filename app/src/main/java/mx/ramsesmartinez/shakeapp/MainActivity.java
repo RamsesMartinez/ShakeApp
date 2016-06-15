@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         FacebookSdk.sdkInitialize(getApplicationContext());
-        AppEventsLogger.activateApp(this);
+//        AppEventsLogger.activateApp(this);
         setContentView(R.layout.activity_main);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -84,7 +84,12 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
 
         // Validate if there is already someone logged
         validateLogged();
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        validateLogged();
     }
 
     @Override
@@ -153,7 +158,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
             intentShakeActivity.putExtra("NAME", strName);
             intentShakeActivity.putExtra("PHOTO", strUrlPhoto);
             startActivity(intentShakeActivity);
-//            finish();
+            finish();
         }
 
         loginButton = (LoginButton) findViewById(R.id.button_login_facebook);

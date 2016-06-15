@@ -1,6 +1,8 @@
 package mx.ramsesmartinez.shakeapp;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -12,10 +14,19 @@ import android.support.v7.widget.Toolbar;
 import android.os.Bundle;
 import android.text.format.DateFormat;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Chronometer;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.facebook.AccessToken;
+import com.facebook.FacebookSdk;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.HttpMethod;
+import com.facebook.login.LoginManager;
 
 public class ShakeActivity extends AppCompatActivity implements SensorEventListener, OnClickListener, Chronometer.OnChronometerTickListener {
 
@@ -41,6 +52,7 @@ public class ShakeActivity extends AppCompatActivity implements SensorEventListe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        FacebookSdk.sdkInitialize(getApplicationContext());
         setContentView(R.layout.activity_shake);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -87,6 +99,22 @@ public class ShakeActivity extends AppCompatActivity implements SensorEventListe
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()){
+            case R.id.action_settings:
+                break;
+            case R.id.action_logout:
+                disconnectFromFacebook();
+                break;
+            default:
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     /**
      * Register listener
      */
@@ -157,6 +185,39 @@ public class ShakeActivity extends AppCompatActivity implements SensorEventListe
     }
 
     /**
+     * Facebook Methods
+     */
+    public void disconnectFromFacebook() {
+
+        if (AccessToken.getCurrentAccessToken() == null) {
+            Toast.makeText(getApplicationContext(),"Ya estás desconectado",Toast.LENGTH_SHORT).show();
+            return; // already logged out
+        }
+        LoginManager.getInstance().logOut();
+        Intent intentMainActivity = new Intent(ShakeActivity.this,MainActivity.class);
+        startActivity(intentMainActivity);
+        Toast.makeText(getApplicationContext(),"Sesión finalizada",Toast.LENGTH_SHORT).show();
+        finish();
+
+        /**
+         * Methods to completely de-couple
+         */
+//
+//        new GraphRequest(AccessToken.getCurrentAccessToken(), "/me/permissions/", null, HttpMethod.DELETE, new GraphRequest
+//                .Callback() {
+//            @Override
+//            public void onCompleted(GraphResponse graphResponse) {
+//                LoginManager.getInstance().logOut();
+//                Intent intentMainActivity = new Intent(ShakeActivity.this,MainActivity.class);
+//                startActivity(intentMainActivity);
+//                finish();
+//                Toast.makeText(getApplicationContext(),"deslogueado :D",Toast.LENGTH_SHORT).show();
+//            }
+//        }).executeAsync();
+
+    }
+
+    /**
      * Shakes detector
      */
     private void detectShake(SensorEvent event) {
@@ -180,8 +241,5 @@ public class ShakeActivity extends AppCompatActivity implements SensorEventListe
         }
     }
 
-    /**
-     * Sets the toolbar
-     */
 
 }
