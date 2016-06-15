@@ -42,13 +42,20 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
     Bitmap bitmapImageProfile;
     CallbackManager callbackManager;
     Drawable drawableImageProfile;
+    DownloadImages downloadImages;
+    Profile facebookProfile;
     RoundedBitmapDrawable roundedDrawable;
+    LoginButton loginButton;
+    Uri uriPhoto;
 
     EditText editTextEmail;
     EditText editTextPassword;
     ImageView imageViewProfileLogin;
     TextView textViewEmail;
     TextView textViewPassword;
+
+    String strUrlPhoto;
+    String strName;
 
 
     public void setToolbar(){
@@ -66,10 +73,23 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
         setToolbar();
 
         callbackManager = CallbackManager.Factory.create();
-        LoginButton loginButton = (LoginButton) findViewById(R.id.button_login_facebook);
+        loginButton = (LoginButton) findViewById(R.id.button_login_facebook);
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
+
+                facebookProfile = com.facebook.Profile.getCurrentProfile();
+                strName = facebookProfile.getName();
+                uriPhoto = facebookProfile.getProfilePictureUri(200,200);
+                strUrlPhoto = uriPhoto.toString();
+                downloadImages = new DownloadImages();
+                downloadImages.execute();
+
+//                Intent intentShakeActivity = new Intent(MainActivity.this,ShakeActivity.class);
+//                intentShakeActivity.putExtra("NAME",name);
+//                intentShakeActivity.putExtra("PHOTO",uriPhoto.toString());
+//                startActivity(intentShakeActivity);
+//                finish();
 
             }
 
@@ -100,6 +120,8 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
         editTextEmail.setOnFocusChangeListener(this);
         editTextPassword.setOnFocusChangeListener(this);
         imageViewProfileLogin.setImageDrawable(roundedDrawable);
+
+
     }
 
     @Override
@@ -153,6 +175,39 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
                 }
                 break;
         }
+    }
+
+    class DownloadImages extends AsyncTask<Void,Void,Void>{
+        Bitmap bitmap = null;
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            try {
+                bitmap = Picasso.with(MainActivity.this).load(strUrlPhoto).get();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            /** If the image download was completed succesfully */
+            if (bitmap != null) {
+                imageViewProfileLogin.setImageBitmap(bitmap);
+
+                //Creates the rounded drawable
+                roundedDrawable = RoundedBitmapDrawableFactory.create(getResources(), bitmap);
+                roundedDrawable.setCornerRadius(bitmap.getHeight());
+                imageViewProfileLogin.setImageDrawable(roundedDrawable);
+
+            } else {
+                Toast.makeText(getApplicationContext(),"NO POS NO",Toast.LENGTH_SHORT).show();
+            }
+            super.onPostExecute(aVoid);
+        }
+
     }
 
 }
