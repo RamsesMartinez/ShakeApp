@@ -30,7 +30,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:weightSum="1">
 
             <TextView
                 android:id="@+id/text_view_score"
@@ -41,6 +42,17 @@
                 android:text="@string/score"
                 android:textColor="@color/primary_dark"
                 android:textSize="@dimen/font_size_score" />
+
+            <TextView
+                android:id="@+id/text_view_shake"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="@string/shake"
+                android:textSize="@dimen/font_size_shake"
+                android:textColor="@color/accent"
+                android:visibility="gone"/>
 
             <Chronometer
                 android:id="@+id/chronometer"

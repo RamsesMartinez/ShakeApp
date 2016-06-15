@@ -8,7 +8,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -53,13 +52,14 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
 
     String strUrlPhoto;
     String strName;
+    String strFirstName;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         FacebookSdk.sdkInitialize(getApplicationContext());
-//        AppEventsLogger.activateApp(this);
+        AppEventsLogger.activateApp(this);
         setContentView(R.layout.activity_main);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -81,9 +81,12 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
         editTextEmail.setOnFocusChangeListener(this);
         editTextPassword.setOnFocusChangeListener(this);
         imageViewProfileLogin.setImageDrawable(roundedDrawable);
-
-        // Validate if there is already someone logged
         validateLogged();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
     }
 
     @Override
@@ -147,13 +150,21 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
     }
 
     private void validateLogged(){
-        if (AccessToken.getCurrentAccessToken() != null && com.facebook.Profile.getCurrentProfile() != null) {
 
+        if (AccessToken.getCurrentAccessToken() != null && com.facebook.Profile.getCurrentProfile() != null) {
             facebookProfile = com.facebook.Profile.getCurrentProfile();
-            strName = facebookProfile.getName();
+            strName = facebookProfile.getName().toString();
+            strFirstName = facebookProfile.getFirstName().toString();
             uriPhoto = facebookProfile.getProfilePictureUri(200, 200);
             strUrlPhoto = uriPhoto.toString();
+
             // App code
+            try {
+                Thread.sleep(2000);
+                Toast.makeText(getApplicationContext(),"Hola "+ strFirstName + "!!!",Toast.LENGTH_SHORT).show();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             Intent intentShakeActivity = new Intent(MainActivity.this, ShakeActivity.class);
             intentShakeActivity.putExtra("NAME", strName);
             intentShakeActivity.putExtra("PHOTO", strUrlPhoto);
@@ -162,18 +173,23 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
         }
 
         loginButton = (LoginButton) findViewById(R.id.button_login_facebook);
+        loginButton.setReadPermissions("user_friends");
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
+                try {
+                    facebookProfile = com.facebook.Profile.getCurrentProfile();
+                    strName = facebookProfile.getName().toString();
 
-                facebookProfile = com.facebook.Profile.getCurrentProfile();
-                strName = facebookProfile.getName();
-                uriPhoto = facebookProfile.getProfilePictureUri(200,200);
-                strUrlPhoto = uriPhoto.toString();
-                downloadImages = new DownloadImages();
-                downloadImages.execute();
+                    uriPhoto = facebookProfile.getProfilePictureUri(200, 200);
+                    strUrlPhoto = uriPhoto.toString();
+                    downloadImages = new DownloadImages();
+                    downloadImages.execute();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
-                Intent intentShakeActivity = new Intent(MainActivity.this,ShakeActivity.class);
+                Intent intentShakeActivity = new Intent(MainActivity.this,MainActivity.class);
                 intentShakeActivity.putExtra("NAME",strName);
                 intentShakeActivity.putExtra("PHOTO",strUrlPhoto);
                 startActivity(intentShakeActivity);
@@ -219,7 +235,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
                 imageViewProfileLogin.setImageDrawable(roundedDrawable);
 
             } else {
-                Toast.makeText(getApplicationContext(),"NO POS NO",Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(),"Problemas al cargar la imagen",Toast.LENGTH_SHORT).show();
             }
             super.onPostExecute(aVoid);
         }

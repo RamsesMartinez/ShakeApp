@@ -24,4 +24,5 @@
 
     <dimen name="font_size_score">96sp</dimen>
     <dimen name="font_size_chronometer">48sp</dimen>
+    <dimen name="font_size_shake">36sp</dimen>
 </resources>

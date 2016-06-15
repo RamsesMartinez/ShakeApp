@@ -10,4 +10,5 @@
     <string name="action_settings">Configuraciones</string>
     <string name="next">Next</string>
     <string name="action_logout">Cerrar Sesión</string>
+    <string name="shake">Shake it!</string>
 </resources>

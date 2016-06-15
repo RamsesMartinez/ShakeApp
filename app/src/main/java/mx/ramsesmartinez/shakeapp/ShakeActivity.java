@@ -1,12 +1,12 @@
 package mx.ramsesmartinez.shakeapp;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.media.MediaPlayer;
 import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
 import android.support.design.widget.FloatingActionButton;
@@ -45,9 +45,11 @@ public class ShakeActivity extends AppCompatActivity implements SensorEventListe
     String statusFloatingActionButton;
     int counter;
 
-    TextView textViewScore;
-    FloatingActionButton floatingActionButton;
     Chronometer chronometer;
+    FloatingActionButton floatingActionButton;
+    MediaPlayer soundHS;
+    TextView textViewScore;
+    TextView textViewShake;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,7 +67,10 @@ public class ShakeActivity extends AppCompatActivity implements SensorEventListe
         chronometer = (Chronometer) findViewById(R.id.chronometer);
         floatingActionButton = (FloatingActionButton) findViewById(R.id.floating_action_button);
         textViewScore = (TextView) findViewById(R.id.text_view_score);
+        textViewShake = (TextView) findViewById(R.id.text_view_shake);
 
+
+//        soundHS = MediaPlayer.create(this, R.raw.sound_harlem_shake);
         chronometer.setOnChronometerTickListener(this);
         textViewScore.setText(String.valueOf(counter));
         floatingActionButton.setOnClickListener(this);
@@ -138,19 +143,14 @@ public class ShakeActivity extends AppCompatActivity implements SensorEventListe
     }
 
     /**
-     * OnClicLsitener
+     * OnClickListener
      */
     @Override
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.floating_action_button:
-                if(statusFloatingActionButton.equals("stop")){
-                    onStartChronometer();
-                    statusFloatingActionButton = "play";
-                } else {
-                    onStopChronometer();
-                    statusFloatingActionButton = "stop";
-                }
+                if(statusFloatingActionButton.equals("stop"))  onStartChronometer();
+                else onStopChronometer();
                 break;
         }
     }
@@ -164,9 +164,7 @@ public class ShakeActivity extends AppCompatActivity implements SensorEventListe
         long elapsedTime = SystemClock.elapsedRealtime() - c.getBase();
         String strElapsedTime = String.valueOf(DateFormat.format("mm:ss", elapsedTime));
 
-        if(strElapsedTime.equals("00:10")){
-            onStopChronometer();
-        }
+        if(strElapsedTime.equals("01:00")) onStopChronometer();
     }
 
     /**
@@ -174,14 +172,23 @@ public class ShakeActivity extends AppCompatActivity implements SensorEventListe
      */
     public void onStartChronometer(){
         counter = 0;
+        statusFloatingActionButton = "play";
+
         chronometer.setBase(SystemClock.elapsedRealtime());
         chronometer.start();
-        textViewScore.setText(String.valueOf(counter));
         mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+        soundHS = MediaPlayer.create(this, R.raw.sound_harlem_shake);
+        soundHS.start();
+        textViewShake.setVisibility(View.VISIBLE);
+        textViewScore.setText(String.valueOf(counter));
     }
     public void onStopChronometer(){
-        mSensorManager.unregisterListener(this);
+        statusFloatingActionButton = "stop";
+
         chronometer.stop();
+        mSensorManager.unregisterListener(this);
+        textViewShake.setVisibility(View.GONE);
+        soundHS.stop();
     }
 
     /**
@@ -193,6 +200,10 @@ public class ShakeActivity extends AppCompatActivity implements SensorEventListe
             Toast.makeText(getApplicationContext(),"Ya estás desconectado",Toast.LENGTH_SHORT).show();
             return; // already logged out
         }
+
+        /**
+         * Simple Logout
+         */
         LoginManager.getInstance().logOut();
         Intent intentMainActivity = new Intent(ShakeActivity.this,MainActivity.class);
         startActivity(intentMainActivity);
@@ -202,7 +213,6 @@ public class ShakeActivity extends AppCompatActivity implements SensorEventListe
         /**
          * Methods to completely de-couple
          */
-//
 //        new GraphRequest(AccessToken.getCurrentAccessToken(), "/me/permissions/", null, HttpMethod.DELETE, new GraphRequest
 //                .Callback() {
 //            @Override
@@ -211,7 +221,7 @@ public class ShakeActivity extends AppCompatActivity implements SensorEventListe
 //                Intent intentMainActivity = new Intent(ShakeActivity.this,MainActivity.class);
 //                startActivity(intentMainActivity);
 //                finish();
-//                Toast.makeText(getApplicationContext(),"deslogueado :D",Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getApplicationContext(),"Sesión finalizada",Toast.LENGTH_SHORT).show();
 //            }
 //        }).executeAsync();
 
