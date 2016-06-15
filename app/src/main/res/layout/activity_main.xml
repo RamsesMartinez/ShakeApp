@@ -12,13 +12,18 @@
         android:layout_width="match_parent"/>
 
     <LinearLayout
+        android:background="@color/icons"
+        android:elevation="@dimen/elevation_card"
+        android:gravity="center_horizontal"
         android:layout_width="@dimen/width_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/activity_horizontal_margin"
+        android:layout_marginBottom="@dimen/activity_horizontal_margin"
         android:orientation="vertical"
-
         android:paddingLeft="@dimen/activity_vertical_margin"
         android:paddingRight="@dimen/activity_vertical_margin"
-        android:gravity="center_horizontal">
+        android:paddingBottom="@dimen/activity_horizontal_margin"
+        android:weightSum="1">
         <!--android:paddingTop="@dimen/activity_horizontal_margin"-->
 
         <ImageView
@@ -28,6 +33,22 @@
             android:layout_marginTop="@dimen/margin_image"
             android:layout_marginBottom="@dimen/margin_image"
             android:src="@drawable/img_boy" />
+
+        <com.facebook.login.widget.LoginButton
+            android:id="@+id/button_login_facebook"
+            android:elevation="@dimen/elevation_raised_button"
+            android:layout_width="match_parent"
+            android:layout_gravity="center_horizontal"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/activity_horizontal_margin"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_text"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:text="@string/or"/>
 
         <TextView
             android:id="@+id/text_view_email"
@@ -61,22 +82,15 @@
             android:hint="@string/password"
             android:singleLine="true"/>
 
-        <TextView
+        <Button
+            android:id="@+id/button_login"
+            android:elevation="@dimen/elevation_raised_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_text"
-            android:gravity="center"
-            android:textStyle="bold"
-            android:text="O mejor"/>
-        <!--android:layout_marginTop="@dimen/activity_horizontal_margin"-->
+            android:text="@string/loggin"
+            style="@style/Base.Widget.AppCompat.Button.Colored" />
 
-        <Button
-            style="@style/Widget.AppCompat.Button.Colored"
-            android:layout_marginTop="@dimen/activity_horizontal_margin"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/loggin_facebook"
-            android:drawableLeft="@drawable/ic_facebook"/>
+        <!--android:layout_marginTop="@dimen/activity_horizontal_margin"-->
 
 
     </LinearLayout>
