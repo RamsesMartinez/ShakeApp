@@ -5,8 +5,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/primary"
     tools:context="mx.ramsesmartinez.shakeapp.ShakeActivity">
+
+    <include
+        layout="@layout/toolbar"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"/>
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -24,9 +28,8 @@
                 android:layout_height="@dimen/width_content_score"
                 android:layout_width="@dimen/height_content_score"
                 android:layout_gravity="center"
-                android:layout_marginTop="@dimen/activity_horizontal_margin"
                 android:text="@string/score"
-                android:textColor="@color/icons"
+                android:textColor="@color/primary_dark"
                 android:textSize="@dimen/font_size_score"/>
         </LinearLayout>
 
@@ -36,9 +39,10 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|center"
             android:layout_marginBottom="@dimen/margin_floating_button"
-            android:src="@android:drawable/ic_media_play"
+            android:src="@drawable/ic_play"
             app:elevation="@dimen/elevation_floating_button"
             app:fabSize="normal"
-            app:borderWidth="0dp"/>
+            app:borderWidth="0dp"
+            android:foregroundGravity="center_vertical|center_horizontal" />
     </FrameLayout>
 </LinearLayout>

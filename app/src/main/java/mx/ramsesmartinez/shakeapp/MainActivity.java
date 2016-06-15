@@ -85,11 +85,11 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
                 downloadImages = new DownloadImages();
                 downloadImages.execute();
 
-//                Intent intentShakeActivity = new Intent(MainActivity.this,ShakeActivity.class);
-//                intentShakeActivity.putExtra("NAME",name);
-//                intentShakeActivity.putExtra("PHOTO",uriPhoto.toString());
-//                startActivity(intentShakeActivity);
-//                finish();
+                Intent intentShakeActivity = new Intent(MainActivity.this,ShakeActivity.class);
+                intentShakeActivity.putExtra("NAME",strName);
+                intentShakeActivity.putExtra("PHOTO",strUrlPhoto);
+                startActivity(intentShakeActivity);
+                finish();
 
             }
 
