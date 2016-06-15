@@ -7,6 +7,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
 import android.support.design.widget.FloatingActionButton;
@@ -23,11 +24,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.facebook.AccessToken;
+import com.facebook.CallbackManager;
 import com.facebook.FacebookSdk;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.HttpMethod;
 import com.facebook.login.LoginManager;
+import com.facebook.share.model.ShareLinkContent;
+import com.facebook.share.widget.ShareButton;
+import com.facebook.share.widget.ShareDialog;
 
 public class ShakeActivity extends AppCompatActivity implements SensorEventListener, OnClickListener, Chronometer.OnChronometerTickListener {
 
@@ -46,10 +51,14 @@ public class ShakeActivity extends AppCompatActivity implements SensorEventListe
     String statusFloatingActionButton;
     int counter;
     final String time = "00:15";
+
     Button buttonShareFacebook;
+    CallbackManager callbackManager;
     Chronometer chronometer;
     FloatingActionButton floatingActionButton;
     MediaPlayer soundWhip;
+    ShareDialog shareDialog;
+//    ShareButton shareButtonScore;
     TextView textViewScore;
     TextView textViewShake;
 
@@ -81,6 +90,15 @@ public class ShakeActivity extends AppCompatActivity implements SensorEventListe
         //Sensors
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+
+
+        /**
+         * Share button fabceook
+         */
+        callbackManager = CallbackManager.Factory.create();
+        shareDialog = new ShareDialog(this);
+
+//        shareButtonScore = (ShareButton) findViewById(R.id.button_facebook_share);
     }
 
     @Override
@@ -96,6 +114,12 @@ public class ShakeActivity extends AppCompatActivity implements SensorEventListe
     @Override
     protected void onPause() {
         super.onPause();
+    }
+
+    @Override
+    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        callbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
     /**
@@ -122,6 +146,10 @@ public class ShakeActivity extends AppCompatActivity implements SensorEventListe
         }
         return super.onOptionsItemSelected(item);
     }
+
+    /**
+     * Facebook Methods
+     */
 
     /**
      * Register listener
@@ -159,9 +187,6 @@ public class ShakeActivity extends AppCompatActivity implements SensorEventListe
     }
 
 
-    /**
-     * Listens chronometer changes
-     */
     @Override
     public void onChronometerTick(Chronometer c) {
         long elapsedTime = SystemClock.elapsedRealtime() - c.getBase();
@@ -231,6 +256,20 @@ public class ShakeActivity extends AppCompatActivity implements SensorEventListe
 //        }).executeAsync();
 
     }
+
+    public void onClickShareScore(View view){
+        if (ShareDialog.canShow(ShareLinkContent.class)) {
+            ShareLinkContent linkContent = new ShareLinkContent.Builder()
+                    .setContentTitle("Mi Score: " + String.valueOf(counter))
+                    .setContentDescription(
+                            "¿Podrás superar mi puntaje?")
+                    .setContentUrl(Uri.parse("https://s-media-cache-ak0.pinimg.com/236x/ba/79/76/ba7976fe2a863ce6c1cd96e4b033f290.jpg"))
+                    .build();
+
+            shareDialog.show(linkContent);
+        }
+    }
+
 
     /**
      * Shakes detector

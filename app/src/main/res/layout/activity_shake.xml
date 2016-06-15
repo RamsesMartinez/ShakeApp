@@ -92,7 +92,8 @@
             android:visibility="gone"
             android:drawableLeft="@drawable/com_facebook_button_icon_white"
             style="@style/com_facebook_button"
-            android:layout_gravity="bottom" />
+            android:layout_gravity="bottom"
+            android:onClick="onClickShareScore" />
 
 
     </FrameLayout>
