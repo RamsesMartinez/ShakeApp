@@ -6,6 +6,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.app.AppCompatActivity;
@@ -16,6 +17,7 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -34,55 +36,59 @@ import com.squareup.picasso.Picasso;
 
 public class MainActivity extends AppCompatActivity implements OnClickListener, OnFocusChangeListener {
 
-    Bitmap bitmapImageProfile;
-    CallbackManager callbackManager;
-    Drawable drawableImageProfile;
-    DownloadImages downloadImages;
-    Profile facebookProfile;
-    RoundedBitmapDrawable roundedDrawable;
-    Toolbar toolbar;
-    LoginButton loginButton;
-    Uri uriPhoto;
+    private Bitmap bitmapImageProfile;
+    private CallbackManager callbackManager;
+    private Drawable drawableImageProfile;
+    private DownloadImages downloadImages;
+    private Profile facebookProfile;
+    private RoundedBitmapDrawable roundedDrawable;
+    private Toolbar toolbar;
+    private LoginButton loginButtonFacebook;
+    private Uri uriPhoto;
 
-    EditText editTextEmail;
-    EditText editTextPassword;
-    ImageView imageViewProfileLogin;
-    TextView textViewEmail;
-    TextView textViewPassword;
+    private Button buttonLoggin;
+    private EditText editTextEmail;
+    private EditText editTextPassword;
+    private ImageView imageViewProfileLogin;
+    private TextView textViewEmail;
+    private TextView textViewPassword;
 
-    String strUrlPhoto;
-    String strName;
-    String strFirstName;
-
+    private String strUrlPhoto;
+    private String strName;
+    private String strFirstName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         FacebookSdk.sdkInitialize(getApplicationContext());
-        AppEventsLogger.activateApp(this);
+        AppEventsLogger.activateApp(getApplication());
         setContentView(R.layout.activity_main);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+
         callbackManager = CallbackManager.Factory.create();
-        drawableImageProfile= getResources().getDrawable(R.drawable.img_boy);
+        drawableImageProfile = ResourcesCompat.getDrawable(getResources(), R.drawable.img_boy, null);
+//        drawableImageProfile= getResources().getDrawable(R.drawable.img_boy);
         bitmapImageProfile = ((BitmapDrawable) drawableImageProfile).getBitmap();
 
         //Creates the rounded drawable
         roundedDrawable = RoundedBitmapDrawableFactory.create(getResources(), bitmapImageProfile);
         roundedDrawable.setCornerRadius(bitmapImageProfile.getHeight());
 
-
-        editTextEmail= (EditText) findViewById(R.id.edit_text_email);
+        buttonLoggin = (Button) findViewById(R.id.button_login);
+        editTextEmail = (EditText) findViewById(R.id.edit_text_email);
         editTextPassword = (EditText) findViewById(R.id.edit_text_password);
         imageViewProfileLogin = (ImageView) findViewById(R.id.image_view_login_profile);
         textViewEmail  = (TextView) findViewById(R.id.text_view_email);
         textViewPassword = (TextView) findViewById(R.id.text_view_password);
 
+        buttonLoggin.setOnClickListener(this);
         editTextEmail.setOnFocusChangeListener(this);
         editTextPassword.setOnFocusChangeListener(this);
         imageViewProfileLogin.setImageDrawable(roundedDrawable);
-        validateLogged();
+//        validateLogged();
+//        intentShakeActivity();
     }
 
     @Override
@@ -105,11 +111,19 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
     @Override
     public void onClick(View v) {
 
+        switch(v.getId()) {
+            case R.id.button_login:
+                if(validateEditTexts(v))    intentShakeActivity();
+                else    Toast.makeText(getApplicationContext(),"Revisa tus credenciales",Toast.LENGTH_SHORT).show();
+                break;
+        }
     }
 
     @Override
     public void onFocusChange(View v, boolean hasFocus) {
-        // handling text views
+        /**
+         * Shows the textViews of email and password if the EditTexts don't have anything
+         */
         switch(v.getId()){
             case R.id.edit_text_email:
                 if(hasFocus) {
@@ -151,7 +165,6 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
     }
 
     private void validateLogged(){
-
         if (AccessToken.getCurrentAccessToken() != null && com.facebook.Profile.getCurrentProfile() != null) {
             facebookProfile = com.facebook.Profile.getCurrentProfile();
             strName = facebookProfile.getName().toString();
@@ -161,27 +174,22 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
 
             // App code
             try {
-                Thread.sleep(2000);
+                Thread.sleep(500);
                 Toast.makeText(getApplicationContext(),"Hola "+ strFirstName + "!!!",Toast.LENGTH_SHORT).show();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            Intent intentShakeActivity = new Intent(MainActivity.this, ShakeActivity.class);
-            intentShakeActivity.putExtra("NAME", strName);
-            intentShakeActivity.putExtra("PHOTO", strUrlPhoto);
-            startActivity(intentShakeActivity);
-            finish();
+            intentShakeActivity();
         }
 
-        loginButton = (LoginButton) findViewById(R.id.button_facebook_login);
-        loginButton.setReadPermissions("user_friends");
-        loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+        loginButtonFacebook = (LoginButton) findViewById(R.id.button_facebook_login);
+        loginButtonFacebook.setReadPermissions("user_friends");
+        loginButtonFacebook.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
                 try {
                     facebookProfile = com.facebook.Profile.getCurrentProfile();
                     strName = facebookProfile.getName().toString();
-
                     uriPhoto = facebookProfile.getProfilePictureUri(200, 200);
                     strUrlPhoto = uriPhoto.toString();
                     downloadImages = new DownloadImages();
@@ -189,28 +197,43 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-
-                Intent intentShakeActivity = new Intent(MainActivity.this,MainActivity.class);
-                intentShakeActivity.putExtra("NAME",strName);
-                intentShakeActivity.putExtra("PHOTO",strUrlPhoto);
-                startActivity(intentShakeActivity);
-                finish();
-
+                intentShakeActivity();
             }
 
             @Override
-            public void onCancel() {
-
-            }
+            public void onCancel() { }
 
             @Override
-            public void onError(FacebookException error) {
-
-            }
+            public void onError(FacebookException error) { }
         });
     }
 
-    class DownloadImages extends AsyncTask<Void,Void,Void>{
+    private void intentShakeActivity() {
+        Intent intent = new Intent(MainActivity.this, ShakeActivity.class);
+        intent.putExtra("NAME", strName);
+        intent.putExtra("PHOTO", strUrlPhoto);
+        startActivity(intent);
+        finish();
+    }
+
+    private boolean validateEditTexts(View v){
+        boolean valido = false;
+        String strEmail = editTextEmail.getText().toString();
+        String strPassword = editTextPassword.getText().toString();
+
+        if (strEmail.isEmpty() || strPassword.isEmpty()) {
+            if (strEmail.isEmpty())
+                editTextEmail.setError("Ingresa tu email");
+            if (strPassword.isEmpty())
+                editTextPassword.setError("Ingresa tu contraseña");
+        }
+        if (strEmail.equals("shake@gmail.com") && strPassword.equals("shake")) {
+            valido = true;
+        }
+        return valido;
+    }
+
+    private class DownloadImages extends AsyncTask<Void,Void,Void>{
         Bitmap bitmap = null;
 
         @Override

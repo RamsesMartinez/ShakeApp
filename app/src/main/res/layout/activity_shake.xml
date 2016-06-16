@@ -50,7 +50,7 @@
                 android:layout_gravity="center"
                 android:text="@string/score"
                 android:textColor="@color/primary_dark"
-                android:textSize="@dimen/font_size_number_score" />
+                android:textSize="@dimen/font_size_number_score"/>
 
             <TextView
                 android:id="@+id/text_view_shake"

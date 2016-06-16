@@ -63,6 +63,7 @@
         <EditText
             android:id="@+id/edit_text_email"
             android:hint="@string/email"
+            android:inputType="textEmailAddress"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:singleLine="true"/>
@@ -78,6 +79,7 @@
 
         <EditText
             android:id="@+id/edit_text_password"
+            android:inputType="textPassword"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/margin_text"
@@ -96,5 +98,6 @@
 
 
     </LinearLayout>
+
 
 </LinearLayout>

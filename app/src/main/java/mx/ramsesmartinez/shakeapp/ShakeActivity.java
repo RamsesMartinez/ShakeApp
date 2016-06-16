@@ -140,6 +140,7 @@ public class ShakeActivity extends AppCompatActivity implements SensorEventListe
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()){
             case R.id.action_settings:
+
                 break;
             case R.id.action_logout:
                 disconnectFromFacebook();
@@ -198,6 +199,10 @@ public class ShakeActivity extends AppCompatActivity implements SensorEventListe
         if(strElapsedTime.equals(time)) onStopChronometer(true);
     }
 
+
+
+
+
     /**
      * Chronometer methods
      */
@@ -205,23 +210,33 @@ public class ShakeActivity extends AppCompatActivity implements SensorEventListe
         counter = 0;
         statusFloatingActionButton = "play";
 
-        floatingActionButton.setImageResource(R.drawable.ic_stop);
+        buttonShareFacebook.setVisibility(View.GONE);
         chronometer.setBase(SystemClock.elapsedRealtime());
         chronometer.start();
+        textViewScore.setVisibility(View.VISIBLE);
+        textViewShake.setVisibility(View.VISIBLE);
+        chronometer.setVisibility(View.VISIBLE);
+        textViewScore.setText(String.valueOf(counter));
+
+        floatingActionButton.setImageResource(R.drawable.ic_stop);
         mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
 
-        textViewShake.setVisibility(View.VISIBLE);
-        textViewScore.setText(String.valueOf(counter));
-        buttonShareFacebook.setVisibility(View.GONE);
     }
+
     public void onStopChronometer(boolean readyShare){
+        if(readyShare) {
+            buttonShareFacebook.setVisibility(View.VISIBLE);
+            chronometer.setVisibility(View.GONE);
+        } else {
+            buttonShareFacebook.setVisibility(View.GONE);
+        }
+
+        chronometer.stop();
         statusFloatingActionButton = "stop";
         floatingActionButton.setImageResource(R.drawable.ic_play);
-        chronometer.stop();
-        mSensorManager.unregisterListener(this);
+
         textViewShake.setVisibility(View.GONE);
-        if(readyShare) buttonShareFacebook.setVisibility(View.VISIBLE);
-        else buttonShareFacebook.setVisibility(View.GONE);
+        mSensorManager.unregisterListener(this);
     }
 
     /**
@@ -231,6 +246,11 @@ public class ShakeActivity extends AppCompatActivity implements SensorEventListe
 
         if (AccessToken.getCurrentAccessToken() == null) {
             Toast.makeText(getApplicationContext(),"Ya estás desconectado",Toast.LENGTH_SHORT).show();
+            LoginManager.getInstance().logOut();
+            Intent intentMainActivity = new Intent(ShakeActivity.this,MainActivity.class);
+            startActivity(intentMainActivity);
+            Toast.makeText(getApplicationContext(),"Sesión finalizada",Toast.LENGTH_SHORT).show();
+            finish();
             return; // already logged out
         }
 
