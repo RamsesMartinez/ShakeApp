@@ -87,8 +87,22 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
         editTextEmail.setOnFocusChangeListener(this);
         editTextPassword.setOnFocusChangeListener(this);
         imageViewProfileLogin.setImageDrawable(roundedDrawable);
-//        validateLogged();
+        validateLogged();
 //        intentShakeActivity();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState){
+        super.onSaveInstanceState(outState);
+        outState.putString("EMAIL",editTextEmail.getText().toString());
+        outState.putString("PASSWORD",editTextPassword.getText().toString());
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState){
+        super.onRestoreInstanceState(savedInstanceState);
+        editTextEmail.setText(savedInstanceState.getString("EMAIL"));
+        editTextPassword.setText(savedInstanceState.getString("PASSWORD"));
     }
 
     @Override
@@ -165,6 +179,9 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
     }
 
     private void validateLogged(){
+        /**
+         * If there is already someone connected then starts the intent to ShakeApp Activity
+         */
         if (AccessToken.getCurrentAccessToken() != null && com.facebook.Profile.getCurrentProfile() != null) {
             facebookProfile = com.facebook.Profile.getCurrentProfile();
             strName = facebookProfile.getName().toString();
@@ -175,7 +192,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
             // App code
             try {
                 Thread.sleep(500);
-                Toast.makeText(getApplicationContext(),"Hola "+ strFirstName + "!!!",Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(),"¡Hola "+ strFirstName + "!",Toast.LENGTH_SHORT).show();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -232,6 +249,8 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
         }
         return valido;
     }
+
+
 
     private class DownloadImages extends AsyncTask<Void,Void,Void>{
         Bitmap bitmap = null;

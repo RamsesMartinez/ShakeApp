@@ -9,6 +9,9 @@ import android.hardware.SensorManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.SystemClock;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.Toolbar;
@@ -41,7 +44,7 @@ public class ShakeActivity extends AppCompatActivity implements SensorEventListe
 
     // Constants for sensors
     private static final float SHAKE_THRESHOLD = 1.1f;
-    private static final int SHAKE_WAIT_TIME_MS = 250;
+    private static final int SHAKE_WAIT_TIME_MS = 300;
 
     // Sensors
     private SensorManager mSensorManager;
@@ -53,15 +56,14 @@ public class ShakeActivity extends AppCompatActivity implements SensorEventListe
     String urlImageProfile;
     String statusFloatingActionButton;
     int counter;
-    final String time = "00:15";
+    final String time = "00:02";
 
-    Button buttonShareFacebook;
     CallbackManager callbackManager;
     Chronometer chronometer;
     FloatingActionButton floatingActionButton;
-    MediaPlayer soundWhip;
+    MediaPlayer shakeSound;
     ShareDialog shareDialog;
-//    ShareButton shareButtonScore;
+    Snackbar snackbar;
     TextView textViewScore;
     TextView textViewShake;
 
@@ -78,7 +80,6 @@ public class ShakeActivity extends AppCompatActivity implements SensorEventListe
         counter = 0;
         statusFloatingActionButton = "stop";
 
-        buttonShareFacebook = (Button) findViewById(R.id.button_facebook_share);
         chronometer = (Chronometer) findViewById(R.id.chronometer);
         floatingActionButton = (FloatingActionButton) findViewById(R.id.floating_action_button);
         textViewScore = (TextView) findViewById(R.id.text_view_number_score);
@@ -152,10 +153,6 @@ public class ShakeActivity extends AppCompatActivity implements SensorEventListe
     }
 
     /**
-     * Facebook Methods
-     */
-
-    /**
      * Register listener
      */
     @Override
@@ -184,8 +181,10 @@ public class ShakeActivity extends AppCompatActivity implements SensorEventListe
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.floating_action_button:
-                if(statusFloatingActionButton.equals("stop"))  onStartChronometer();
-                else onStopChronometer(false);
+                if(statusFloatingActionButton.equals("stop"))
+                    onStartChronometer();
+                else
+                    onStopChronometer(false);
                 break;
         }
     }
@@ -199,9 +198,29 @@ public class ShakeActivity extends AppCompatActivity implements SensorEventListe
         if(strElapsedTime.equals(time)) onStopChronometer(true);
     }
 
+    public void snackBarShare() {
+        CoordinatorLayout coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
+        snackbar = Snackbar.make(coordinatorLayout, getString(R.string.final_score) + " " + counter, Snackbar.LENGTH_INDEFINITE)
+                .setAction(getString(R.string.facebook_share), new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        facebookShareScore();
+                    }
+                });
 
+        //Action text color
+        snackbar.setActionTextColor(ContextCompat.getColor(getApplicationContext(), R.color.icons));
 
+        //Background color
+        View snackBarView = snackbar.getView();
+        snackBarView.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.com_facebook_button_background_color));
 
+        //Message text color
+        TextView textView = (TextView) snackBarView.findViewById(android.support.design.R.id.snackbar_text);
+        textView.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.icons));
+
+        snackbar.show();
+    }
 
     /**
      * Chronometer methods
@@ -210,13 +229,15 @@ public class ShakeActivity extends AppCompatActivity implements SensorEventListe
         counter = 0;
         statusFloatingActionButton = "play";
 
-        buttonShareFacebook.setVisibility(View.GONE);
         chronometer.setBase(SystemClock.elapsedRealtime());
         chronometer.start();
         textViewScore.setVisibility(View.VISIBLE);
         textViewShake.setVisibility(View.VISIBLE);
         chronometer.setVisibility(View.VISIBLE);
         textViewScore.setText(String.valueOf(counter));
+        if(snackbar != null){
+            snackbar.dismiss();
+        }
 
         floatingActionButton.setImageResource(R.drawable.ic_stop);
         mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
@@ -225,10 +246,8 @@ public class ShakeActivity extends AppCompatActivity implements SensorEventListe
 
     public void onStopChronometer(boolean readyShare){
         if(readyShare) {
-            buttonShareFacebook.setVisibility(View.VISIBLE);
             chronometer.setVisibility(View.GONE);
-        } else {
-            buttonShareFacebook.setVisibility(View.GONE);
+            snackBarShare();
         }
 
         chronometer.stop();
@@ -245,7 +264,6 @@ public class ShakeActivity extends AppCompatActivity implements SensorEventListe
     public void disconnectFromFacebook() {
 
         if (AccessToken.getCurrentAccessToken() == null) {
-            Toast.makeText(getApplicationContext(),"Ya estás desconectado",Toast.LENGTH_SHORT).show();
             LoginManager.getInstance().logOut();
             Intent intentMainActivity = new Intent(ShakeActivity.this,MainActivity.class);
             startActivity(intentMainActivity);
@@ -280,13 +298,13 @@ public class ShakeActivity extends AppCompatActivity implements SensorEventListe
 
     }
 
-    public void onClickShareScore(final View view){
+    public void facebookShareScore(){
         if (ShareDialog.canShow(ShareLinkContent.class)) {
             ShareLinkContent linkContent = new ShareLinkContent.Builder()
                     .setContentTitle("Mi Score: " + String.valueOf(counter))
                     .setContentDescription(
                             "¿Podrás superar mi puntaje?")
-                    .setContentUrl(Uri.parse("Facebook.com"))
+                    .setContentUrl(Uri.parse("http://shakeapp-android.blogspot.mx/"))
                     .build();
 
             shareDialog.show(linkContent);
@@ -312,7 +330,6 @@ public class ShakeActivity extends AppCompatActivity implements SensorEventListe
         });
     }
 
-
     /**
      * Shakes detector
      */
@@ -326,15 +343,12 @@ public class ShakeActivity extends AppCompatActivity implements SensorEventListe
             float gY = event.values[1] / SensorManager.GRAVITY_EARTH;
             float gZ = event.values[2] / SensorManager.GRAVITY_EARTH;
 
-            // gForce will be close to 1 when there is no movement
             double gForce = Math.sqrt(gX * gX + gY * gY + gZ * gZ);
 
-            // Change background color if gForce exceeds threshold;
-            // otherwise, reset the color
             if (gForce > SHAKE_THRESHOLD) {
                 textViewScore.setText(String.valueOf(++counter));
-                soundWhip = MediaPlayer.create(this, R.raw.sound_shot);
-                soundWhip.start();
+                shakeSound = MediaPlayer.create(this, R.raw.sound_jump_1);
+                shakeSound.start();
             }
         }
     }

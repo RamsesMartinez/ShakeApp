@@ -6,11 +6,12 @@
     <string name="login">Iniciar sesión</string>
     <string name="or">OR</string>
     <string name="score">0</string>
+    <string name="final_score">Puntaje Final:</string>
     <string name="act_main_no_acuracy">Sin Suficiente presición</string>
     <string name="action_settings">Configuraciones</string>
     <string name="next">Next</string>
     <string name="action_logout">Cerrar Sesión</string>
     <string name="shake">Shake it!</string>
-    <string name="facebook_share">Compartir Resultado</string>
+    <string name="facebook_share">Compartir en Facebook</string>
     <string name="text_score">Score</string>
 </resources>
