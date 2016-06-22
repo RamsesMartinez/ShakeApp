@@ -14,4 +14,5 @@
     <string name="shake">Shake it!</string>
     <string name="facebook_share">Compartir en Facebook</string>
     <string name="text_score">Score</string>
+    <string name="chronometer">00:00</string>
 </resources>

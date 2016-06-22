@@ -8,6 +8,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.CountDownTimer;
 import android.os.SystemClock;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
@@ -40,11 +41,18 @@ import com.facebook.share.model.ShareLinkContent;
 import com.facebook.share.widget.ShareButton;
 import com.facebook.share.widget.ShareDialog;
 
-public class ShakeActivity extends AppCompatActivity implements SensorEventListener, OnClickListener, Chronometer.OnChronometerTickListener {
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+public class ShakeActivity extends AppCompatActivity implements SensorEventListener, OnClickListener{
 
     // Constants for sensors
     private static final float SHAKE_THRESHOLD = 1.1f;
     private static final int SHAKE_WAIT_TIME_MS = 300;
+
+    //Values to set the counter
+    private static final int TIME = 30000;
+    private static final int TICK_TIME = 1000;
 
     // Sensors
     private SensorManager mSensorManager;
@@ -52,18 +60,19 @@ public class ShakeActivity extends AppCompatActivity implements SensorEventListe
     Toolbar toolbar;
     long shakeTime = 0;
 
+
     String name;
     String urlImageProfile;
     String statusFloatingActionButton;
     int counter;
-    final String time = "00:02";
 
     CallbackManager callbackManager;
-    Chronometer chronometer;
+    CountDownTimer counterDownTimer;
     FloatingActionButton floatingActionButton;
     MediaPlayer shakeSound;
     ShareDialog shareDialog;
     Snackbar snackbar;
+    TextView textViewChronometer;
     TextView textViewScore;
     TextView textViewShake;
 
@@ -80,14 +89,11 @@ public class ShakeActivity extends AppCompatActivity implements SensorEventListe
         counter = 0;
         statusFloatingActionButton = "stop";
 
-        chronometer = (Chronometer) findViewById(R.id.chronometer);
         floatingActionButton = (FloatingActionButton) findViewById(R.id.floating_action_button);
+        textViewChronometer = (TextView) findViewById(R.id.chronometer);
         textViewScore = (TextView) findViewById(R.id.text_view_number_score);
         textViewShake = (TextView) findViewById(R.id.text_view_shake);
 
-
-//        soundHS = MediaPlayer.create(this, R.raw.sound_harlem_shake);
-        chronometer.setOnChronometerTickListener(this);
         textViewScore.setText(String.valueOf(counter));
         floatingActionButton.setOnClickListener(this);
 
@@ -97,12 +103,29 @@ public class ShakeActivity extends AppCompatActivity implements SensorEventListe
 
 
         /**
-         * Share button fabceook
+         * Share button fabcebook
          */
         callbackManager = CallbackManager.Factory.create();
         shareDialog = new ShareDialog(this);
 
+        /**
+         * Counter Down
+         */
+         counterDownTimer();
+
 //        shareButtonScore = (ShareButton) findViewById(R.id.button_facebook_share);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt("COUNTER", counter);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState){
+        super.onRestoreInstanceState(savedInstanceState);
+        counter = savedInstanceState.getInt("COUNTER");
     }
 
     @Override
@@ -189,15 +212,6 @@ public class ShakeActivity extends AppCompatActivity implements SensorEventListe
         }
     }
 
-
-    @Override
-    public void onChronometerTick(Chronometer c) {
-        long elapsedTime = SystemClock.elapsedRealtime() - c.getBase();
-        String strElapsedTime = String.valueOf(DateFormat.format("mm:ss", elapsedTime));
-
-        if(strElapsedTime.equals(time)) onStopChronometer(true);
-    }
-
     public void snackBarShare() {
         CoordinatorLayout coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
         snackbar = Snackbar.make(coordinatorLayout, getString(R.string.final_score) + " " + counter, Snackbar.LENGTH_INDEFINITE)
@@ -229,15 +243,17 @@ public class ShakeActivity extends AppCompatActivity implements SensorEventListe
         counter = 0;
         statusFloatingActionButton = "play";
 
-        chronometer.setBase(SystemClock.elapsedRealtime());
-        chronometer.start();
         textViewScore.setVisibility(View.VISIBLE);
         textViewShake.setVisibility(View.VISIBLE);
-        chronometer.setVisibility(View.VISIBLE);
+        textViewChronometer.setVisibility(View.VISIBLE);
         textViewScore.setText(String.valueOf(counter));
+
         if(snackbar != null){
             snackbar.dismiss();
         }
+
+        // Starts the counter
+        counterDownTimer.start();
 
         floatingActionButton.setImageResource(R.drawable.ic_stop);
         mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
@@ -246,16 +262,29 @@ public class ShakeActivity extends AppCompatActivity implements SensorEventListe
 
     public void onStopChronometer(boolean readyShare){
         if(readyShare) {
-            chronometer.setVisibility(View.GONE);
+            textViewChronometer.setVisibility(View.GONE);
             snackBarShare();
         }
 
-        chronometer.stop();
+        counterDownTimer.cancel();
         statusFloatingActionButton = "stop";
         floatingActionButton.setImageResource(R.drawable.ic_play);
 
         textViewShake.setVisibility(View.GONE);
         mSensorManager.unregisterListener(this);
+    }
+
+    private void counterDownTimer(){
+        counterDownTimer = new CountDownTimer(TIME, TICK_TIME) {
+            public void onTick(long millisUntilFinished) {
+                textViewChronometer.setText("00:"+String.valueOf(millisUntilFinished/TICK_TIME));
+            }
+
+            public void onFinish() {
+                snackBarShare();
+                textViewChronometer.setText(R.string.chronometer);
+            }
+        };
     }
 
     /**
@@ -313,7 +342,7 @@ public class ShakeActivity extends AppCompatActivity implements SensorEventListe
             @Override
             public void onSuccess(Sharer.Result result) {
                 counter = 0;
-                chronometer.setBase(SystemClock.elapsedRealtime());
+//                textViewChronometer.setBase(SystemClock.elapsedRealtime());
                 onStopChronometer(false);
                 textViewScore.setText(String.valueOf(counter));
             }
@@ -352,6 +381,5 @@ public class ShakeActivity extends AppCompatActivity implements SensorEventListe
             }
         }
     }
-
 
 }
