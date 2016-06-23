@@ -178,6 +178,9 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
         }
     }
 
+    /**
+     * Validates if there is already someone connected
+     */
     private void validateLogged(){
         /**
          * If there is already someone connected then starts the intent to ShakeApp Activity
@@ -193,10 +196,10 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
             try {
                 Thread.sleep(500);
                 Toast.makeText(getApplicationContext(),"¡Hola "+ strFirstName + "!",Toast.LENGTH_SHORT).show();
+                intentShakeActivity();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            intentShakeActivity();
         }
 
         loginButtonFacebook = (LoginButton) findViewById(R.id.button_facebook_login);

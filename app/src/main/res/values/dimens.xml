@@ -16,7 +16,7 @@
     <dimen name="height_card_view">230dp</dimen>
     <dimen name="height_image_profile">128dp</dimen>
     <dimen name="height_button">36dp</dimen>
-    <dimen name="height_content_score">160dp</dimen>
+    <dimen name="height_content_score">128dp</dimen>
     <dimen name="height_chronometer">32dp</dimen>
     <dimen name="width_content_score">226dp</dimen>
     <dimen name="width_image_profile">128dp</dimen>

@@ -16,23 +16,30 @@
             android:id="@id/toolbar"
             layout="@layout/toolbar"
             android:layout_height="wrap_content"
-            android:layout_width="match_parent"/>
-        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
             android:layout_below="@id/toolbar">
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:layout_below="@id/toolbar">
+                android:layout_centerVertical="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true">
 
                 <android.support.v7.widget.CardView
                     android:id="@+id/card_view_Manana"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"
                     android:layout_marginTop="@dimen/activity_horizontal_margin"
                     android:layout_marginLeft="@dimen/activity_vertical_margin"
                     android:layout_marginRight="@dimen/activity_vertical_margin"
@@ -43,8 +50,7 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:weightSum="1">
+                        android:orientation="vertical">
 
                         <TextView
                             android:id="@+id/text_view_"
@@ -92,7 +98,17 @@
 
             </LinearLayout>
 
-        </FrameLayout>
+            <Button
+                android:id="@+id/button_mas"
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="mas"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true" />
+
+        </RelativeLayout>
+
     </RelativeLayout>
 
     <android.support.design.widget.FloatingActionButton
@@ -100,10 +116,10 @@
         android:layout_width="@dimen/floating_action_button"
         android:layout_height="@dimen/floating_action_button"
         android:layout_marginBottom="@dimen/margin_floating_button"
+        android:layout_marginRight="@dimen/margin_floating_button"
         android:src="@drawable/ic_play"
         app:elevation="@dimen/elevation_floating_button"
         app:fabSize="normal"
         app:borderWidth="0dp"
-        android:layout_gravity="bottom|center"
-        android:layout_marginRight="@dimen/margin_floating_button" />
+        android:layout_gravity="bottom|right"/>
 </android.support.design.widget.CoordinatorLayout>
