@@ -52,9 +52,9 @@ public class ShakeActivity extends AppCompatActivity implements SensorEventListe
     private static final int SHAKE_WAIT_TIME_MS = 250;
 
     //Values to set the counter
-    private static final long TIME = 11000;
+    private static final long TIME = 30000;
     private static final long TICK_TIME = 50;
-    private long timePause = TIME;
+    private long timePause;
 
     // Sensors
     private SensorManager mSensorManager;
@@ -65,12 +65,11 @@ public class ShakeActivity extends AppCompatActivity implements SensorEventListe
     String name;
     String urlImageProfile;
     String statusFloatingActionButton;
-    int counterScore = 0;
+    int counterScore;
 
-    Button buttonMas;
     CallbackManager callbackManager;
     CountDownTimer counterDownTimer;
-    FloatingActionButton floatingActionButton;
+    FloatingActionButton floatingActionButtonPlay;
     MediaPlayer shakeSound;
     ShareDialog shareDialog;
     Snackbar snackbar;
@@ -91,51 +90,60 @@ public class ShakeActivity extends AppCompatActivity implements SensorEventListe
         counterScore = 0;
         statusFloatingActionButton = "stop";
 
-        floatingActionButton = (FloatingActionButton) findViewById(R.id.floating_action_button);
+        floatingActionButtonPlay = (FloatingActionButton) findViewById(R.id.floating_action_button);
         textViewChronometer = (TextView) findViewById(R.id.chronometer);
         textViewScore = (TextView) findViewById(R.id.text_view_number_score);
         textViewShake = (TextView) findViewById(R.id.text_view_shake);
-        buttonMas = (Button) findViewById(R.id.button_mas);
 
         textViewScore.setText(String.valueOf(counterScore));
-        floatingActionButton.setOnClickListener(this);
+        floatingActionButtonPlay.setOnClickListener(this);
 
-
-
-        /**
-         * Facebook manager
-         */
+        //Sensor manager
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 
-
-        /**
-         * Facebook Manager
-         */
+        //Facebook Manager
         callbackManager = CallbackManager.Factory.create();
         shareDialog = new ShareDialog(this);
-
-        /**
-         * Prepares the counter to be started
-         */
-         counterDT();
-
-
     }
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
-        // Save variables on screen orientation change.
-        savedInstanceState.putLong("TIME",timePause);
-        savedInstanceState.putInt("SCORE",counterScore);
+        // If the counter is running
+        if(statusFloatingActionButton.equals("play")){
+            onStopChronometer();
+            savedInstanceState.putString("STATUS_COUNTER","play");
+            savedInstanceState.putInt("SCORE",counterScore);
+            savedInstanceState.putLong("TIME",timePause);
+        }else{
+            savedInstanceState.putString("STATUS_COUNTER","stop");
+        }
     }
 
+    @Override
     public void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
+
+        // Validates if the counter was enabled
+        if(savedInstanceState.getString("STATUS_COUNTER").equals("play")){
+            counterScore = savedInstanceState.getInt("SCORE");
+            timePause = savedInstanceState.getLong("TIME");
+            //Prepares the counter to be started
+            onStartChronometer(counterScore);
+        }
+
         // Restore variables on screen orientation change.
-        counterScore = savedInstanceState.getInt("SCORE");
+//        counterScore = savedInstanceState.getInt("SCORE");
 //        textViewScore.setText(String.valueOf(counterScore));
+//        timePause = savedInstanceState.getInt("TIME");
+//        statusFloatingActionButton = (savedInstanceState.getString("PLAY_BUTTON"));
+//
+//        Toast.makeText(getApplicationContext(),savedInstanceState.getString("PLAY_BUTTON"),Toast.LENGTH_SHORT).show();
+//
+//        if(savedInstanceState.getBoolean("COUNTER"))
+//            onStartChronometer();
+
     }
 
     @Override
@@ -151,7 +159,6 @@ public class ShakeActivity extends AppCompatActivity implements SensorEventListe
     @Override
     protected void onPause() {
         super.onPause();
-
     }
 
     @Override
@@ -215,7 +222,6 @@ public class ShakeActivity extends AppCompatActivity implements SensorEventListe
                 else
                     onStopChronometer();
                 break;
-
         }
     }
 
@@ -246,15 +252,16 @@ public class ShakeActivity extends AppCompatActivity implements SensorEventListe
         snackbar.show();
     }
 
+    // Chronometer methods
     /**
-     * Chronometer methods
+     * This chronometer method starts the chronometer with the counterScore=0
      */
     public void onStartChronometer(){
+
         counterScore = 0;
         statusFloatingActionButton = "play";
 
-        floatingActionButton.setImageResource(R.drawable.ic_stop);
-        textViewScore.setVisibility(View.VISIBLE);
+        floatingActionButtonPlay.setImageResource(R.drawable.ic_stop);
         textViewShake.setVisibility(View.VISIBLE);
         textViewChronometer.setVisibility(View.VISIBLE);
         textViewScore.setText(String.valueOf(counterScore));
@@ -263,6 +270,31 @@ public class ShakeActivity extends AppCompatActivity implements SensorEventListe
             snackbar.dismiss();
 
         // Starts the counter
+        counterDT();
+        counterDownTimer.start();
+
+        //Starts the SensorManager
+        mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+    }
+
+    /**
+     * This method is called when the user rotates the display
+     * @param counter sets the initial Score
+     */
+    public void onStartChronometer(int counter){
+        counterScore = counter;
+        statusFloatingActionButton = "play";
+
+        floatingActionButtonPlay.setImageResource(R.drawable.ic_stop);
+        textViewShake.setVisibility(View.VISIBLE);
+        textViewChronometer.setVisibility(View.VISIBLE);
+        textViewScore.setText(String.valueOf(counterScore));
+
+        if(snackbar != null)
+            snackbar.dismiss();
+
+        // Starts the counter
+        counterDT(timePause);
         counterDownTimer.start();
 
         //Starts the SensorManager
@@ -270,57 +302,66 @@ public class ShakeActivity extends AppCompatActivity implements SensorEventListe
     }
 
     public void onStopChronometer(){
-        floatingActionButton.setImageResource(R.drawable.ic_play);
+        floatingActionButtonPlay.setImageResource(R.drawable.ic_play);
         textViewShake.setVisibility(View.GONE);
         statusFloatingActionButton = "stop";
-
+//        timePause = TIME;
         mSensorManager.unregisterListener(this);
         counterDownTimer.cancel();
     }
 
+    /**
+     * Sets the basic counterDownTimer, its called bye the onCreate method
+     */
     private void counterDT(){
-        if(TIME == timePause){
-            counterDownTimer = new CountDownTimer(TIME, TICK_TIME) {
-                public void onTick(long millisUntilFinished) {
-                    String hms = String.format("%02d:%02d.%03d",
-                            TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millisUntilFinished)),
-                            TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished)),
-                            TimeUnit.MILLISECONDS.toMillis(millisUntilFinished)  - TimeUnit.SECONDS.toMillis(TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished)));
-                    textViewChronometer.setText(hms);
-                    timePause = millisUntilFinished;
-                }
+        counterDownTimer = new CountDownTimer(TIME, TICK_TIME) {
+            public void onTick(long millisUntilFinished) {
+                String hms = String.format("%02d:%02d.%03d",
+                        TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millisUntilFinished)),
+                        TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished)),
+                        TimeUnit.MILLISECONDS.toMillis(millisUntilFinished)  - TimeUnit.SECONDS.toMillis(TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished)));
+                textViewChronometer.setText(hms);
+                timePause = millisUntilFinished;
+            }
 
-                public void onFinish() {
-                    textViewChronometer.setText(R.string.chronometer);
-                    snackBarShare();
-                    onStopChronometer();
-                }
-            };
-        } else {
-            counterDownTimer = new CountDownTimer(timePause, TICK_TIME) {
-                public void onTick(long millisUntilFinished) {
-                    String hms = String.format("%02d:%02d.%01d",
-                            TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millisUntilFinished)),
-                            TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished)),
-                            TimeUnit.MILLISECONDS.toMillis(millisUntilFinished)  - TimeUnit.SECONDS.toMillis(TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished)));
-                    textViewChronometer.setText(hms);
-                    timePause = millisUntilFinished;
-                }
-
-                public void onFinish() {
-                    textViewChronometer.setText(R.string.chronometer);
-                    snackBarShare();
-                    onStopChronometer();
-                }
-            };
-        }
-
+            public void onFinish() {
+                textViewChronometer.setText(R.string.chronometer);
+                snackBarShare();
+                onStopChronometer();
+                timePause = TIME;
+            }
+        };
     }
+
+    /**
+     * Sets the counterDownTimer but whit a different time
+     * @param time
+     */
+    private void counterDT(final long time){
+        counterDownTimer = new CountDownTimer(time, TICK_TIME) {
+            public void onTick(long millisUntilFinished) {
+                String hms = String.format("%02d:%02d.%03d",
+                        TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millisUntilFinished)),
+                        TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished)),
+                        TimeUnit.MILLISECONDS.toMillis(millisUntilFinished)  - TimeUnit.SECONDS.toMillis(TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished)));
+                textViewChronometer.setText(hms);
+                timePause = millisUntilFinished;
+            }
+
+            public void onFinish() {
+                textViewChronometer.setText(R.string.chronometer);
+                snackBarShare();
+                onStopChronometer();
+                timePause = TIME;
+            }
+        };
+    }
+
 
     /**
      * Facebook Methods
      */
-    public void disconnectFromFacebook() {
+    private void disconnectFromFacebook() {
 
         if (AccessToken.getCurrentAccessToken() == null) {
             LoginManager.getInstance().logOut();
@@ -357,7 +398,7 @@ public class ShakeActivity extends AppCompatActivity implements SensorEventListe
 
     }
 
-    public void facebookShareScore(){
+    private void facebookShareScore(){
         if (ShareDialog.canShow(ShareLinkContent.class)) {
             ShareLinkContent linkContent = new ShareLinkContent.Builder()
                     .setContentTitle("Mi Puntaje: " + String.valueOf(counterScore))
@@ -405,7 +446,7 @@ public class ShakeActivity extends AppCompatActivity implements SensorEventListe
             double gForce = Math.sqrt(gX * gX + gY * gY + gZ * gZ);
 
             if (gForce > SHAKE_THRESHOLD) {
-                textViewScore.setText(String.valueOf(++counterScore));
+                textViewScore.setText(String.valueOf(counterScore++));
                 shakeSound = MediaPlayer.create(this, R.raw.sound_jump_1);
                 shakeSound.start();
                 shakeSound.stop();
